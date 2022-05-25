@@ -20,6 +20,40 @@ KOMPURA3000AudioProcessor::KOMPURA3000AudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        )
+    ,
+    state(*this, nullptr, juce::Identifier("params"), {
+         std::make_unique<juce::AudioParameterFloat>(
+             "thresh",
+             "Threshold",
+             juce::NormalisableRange<float>(-60.0f, 20.0f, 0.01f),
+             -4.0f),
+         std::make_unique<juce::AudioParameterFloat>(
+             "ratio",
+             "Ratio",
+             juce::NormalisableRange<float>(1.0f, 20.0f, 0.01f),
+             2.0f),
+         std::make_unique<juce::AudioParameterFloat>(
+             "knee",
+             "KneeWidth",
+             juce::NormalisableRange<float>(0.0f, 24.0f, 0.01f),
+             0.0f),
+         std::make_unique<juce::AudioParameterFloat>(
+             "attack",
+             "Attack",
+             juce::NormalisableRange<float>(0.01f, 500.0, 0.01f),
+             10.0f),
+         std::make_unique<juce::AudioParameterFloat>(
+             "release",
+             "Release",
+             juce::NormalisableRange<float>(0.01f, 2000.0f, 0.01f),
+             50.0f),
+         std::make_unique<juce::AudioParameterFloat>(
+             "gain",
+             "Gain",
+             juce::NormalisableRange<float>(0.0f, 24.0f, 0.01f),
+             0.0f)
+        }
+    )
 #endif
 {
 }
@@ -93,8 +127,15 @@ void KOMPURA3000AudioProcessor::changeProgramName (int index, const juce::String
 //==============================================================================
 void KOMPURA3000AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    for (int channel = 0; channel < getNumOutputChannels(); channel++) {
+        allCompressors.add(Compressor());
+    }
+    threshParam = state.getRawParameterValue("thresh");
+    slopeParam = state.getRawParameterValue("ratio");
+    kneeParam = state.getRawParameterValue("knee");
+    attackParam = state.getRawParameterValue("attack");
+    releaseParam = state.getRawParameterValue("release");
+    gainParam = state.getRawParameterValue("gain");
 }
 
 void KOMPURA3000AudioProcessor::releaseResources()
@@ -131,30 +172,17 @@ bool KOMPURA3000AudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
 
 void KOMPURA3000AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    float at = 1 - std::pow(juce::MathConstants<float>::euler, ((1 / getSampleRate()) * -2.2f) / (*attackParam / 1000.0f));
+    float rt = 1 - std::pow(juce::MathConstants<float>::euler, ((1 / getSampleRate()) * -2.2f) / (*releaseParam / 1000.0f));
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    for (int i = 0; i < buffer.getNumSamples(); i++) {
+        for (int channel = 0; channel < getTotalNumOutputChannels(); channel++) {
+            auto* data = buffer.getWritePointer(channel);
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+            Compressor* comp = &allCompressors.getReference(channel);
+            data[i] = comp->compressSample(data[i], *threshParam, *slopeParam, at, rt, *kneeParam, *gainParam);
+            //gain
+        }
     }
 }
 
@@ -166,21 +194,23 @@ bool KOMPURA3000AudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* KOMPURA3000AudioProcessor::createEditor()
 {
-    return new KOMPURA3000AudioProcessorEditor (*this);
+    return new KOMPURA3000AudioProcessorEditor (*this, state);
 }
 
 //==============================================================================
 void KOMPURA3000AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto stateTree = state.copyState();
+    std::unique_ptr<juce::XmlElement> xml(stateTree.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void KOMPURA3000AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState.get() != nullptr && xmlState->hasTagName(state.state.getType())) {
+        state.replaceState(juce::ValueTree::fromXml(*xmlState));
+    }
 }
 
 //==============================================================================

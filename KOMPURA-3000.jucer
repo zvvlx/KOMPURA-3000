@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="gF7lLG" name="KOMPURA-3000" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginManufacturer="samu" companyName="samu">
   <MAINGROUP id="KfwOC6" name="KOMPURA-3000">
     <GROUP id="{388024A8-8B07-16DD-80B0-43409565EC4B}" name="Source">
+      <FILE id="SbKwK0" name="CircularBuffer.cpp" compile="1" resource="0"
+            file="Source/CircularBuffer.cpp"/>
+      <FILE id="BOUWeV" name="CircularBuffer.h" compile="0" resource="0"
+            file="Source/CircularBuffer.h"/>
+      <FILE id="fYJZSj" name="Compressor.cpp" compile="1" resource="0" file="Source/Compressor.cpp"/>
+      <FILE id="Z8vR3t" name="Compressor.h" compile="0" resource="0" file="Source/Compressor.h"/>
       <FILE id="EVikCh" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="EhEkUt" name="PluginProcessor.h" compile="0" resource="0"
@@ -21,18 +28,18 @@
         <CONFIGURATION isDebug="0" name="Release" targetName="KOMPURA-3000"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../KOMPURA2/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../KOMPURA2/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../KOMPURA2/JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

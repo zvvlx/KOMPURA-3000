@@ -9,6 +9,8 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <atomic>
+#include "Compressor.h"
 
 //==============================================================================
 /**
@@ -53,7 +55,12 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    double rawVolume;
+
 private:
+    juce::Array<Compressor> allCompressors;
+    juce::AudioProcessorValueTreeState state;
+    std::atomic<float>* threshParam, *slopeParam, *kneeParam, *attackParam, *releaseParam, *gainParam;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KOMPURA3000AudioProcessor)
 };
