@@ -136,6 +136,12 @@ void KOMPURA3000AudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     attackParam = state.getRawParameterValue("attack");
     releaseParam = state.getRawParameterValue("release");
     gainParam = state.getRawParameterValue("gain");
+
+    rmsLevelLeftAfter.reset(sampleRate, 0.5);
+    rmsLevelRightAfter.reset(sampleRate, 0.5);
+
+    rmsLevelLeftAfter.setCurrentAndTargetValue(-100.f);
+    rmsLevelRightAfter.setCurrentAndTargetValue(-100.f);
 }
 
 void KOMPURA3000AudioProcessor::releaseResources()
@@ -181,9 +187,24 @@ void KOMPURA3000AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
             Compressor* comp = &allCompressors.getReference(channel);
             data[i] = comp->compressSample(data[i], *threshParam, *slopeParam, at, rt, *kneeParam, *gainParam);
-            //gain
         }
     }
+
+    rmsLevelLeftAfter.skip(buffer.getNumSamples());
+    rmsLevelRightAfter.skip(buffer.getNumSamples());
+    const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel( 0, 0, buffer.getNumSamples()));
+    if (value < rmsLevelLeftAfter.getCurrentValue())
+        rmsLevelLeftAfter.setTargetValue(value);
+    else
+        rmsLevelLeftAfter.setCurrentAndTargetValue(value);
+
+    const auto value2 = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
+    if (value2 < rmsLevelRightAfter.getCurrentValue())
+        rmsLevelRightAfter.setTargetValue(value2);
+    else
+        rmsLevelRightAfter.setCurrentAndTargetValue(value2);
+    //rmsLevelLeftAfter = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+    //rmsLevelRightAfter = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
 }
 
 //==============================================================================
@@ -213,6 +234,16 @@ void KOMPURA3000AudioProcessor::setStateInformation (const void* data, int sizeI
     }
 }
 
+float KOMPURA3000AudioProcessor::getRmsValue(const int channel) const {
+    jassert(channel == 0 || channel == 1);
+    if (channel == 0) {
+        return rmsLevelLeftAfter.getCurrentValue();
+    }
+    if (channel == 1) {
+        return rmsLevelRightAfter.getCurrentValue();
+    }
+    return 0;
+}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

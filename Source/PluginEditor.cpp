@@ -19,6 +19,10 @@ KOMPURA3000AudioProcessorEditor::KOMPURA3000AudioProcessorEditor (KOMPURA3000Aud
     addSlider("release", "Release (ms)", releaseSlider, releaseLabel, releaseAttachment);
     addSlider("gain", "Gain (dB)", gainSlider, gainLabel, gainAttachment);
     setSize (1450, 500);
+    addAndMakeVisible(MeterLeft);
+    addAndMakeVisible(MeterRight);
+
+    startTimerHz(24);
 }
 
 KOMPURA3000AudioProcessorEditor::~KOMPURA3000AudioProcessorEditor()
@@ -49,6 +53,9 @@ void KOMPURA3000AudioProcessorEditor::resized()
     attackSlider.setSize(180, 100);
     releaseSlider.setSize(180, 100);
     gainSlider.setSize(180, 100);
+
+    MeterLeft.setBounds(100, 100, 200, 15);
+    MeterRight.setBounds(100, 120, 200, 15);
 }
 
 
@@ -61,4 +68,11 @@ void KOMPURA3000AudioProcessorEditor::addSlider(juce::String name, juce::String 
 
     label.attachToComponent(&slider, false);
     addAndMakeVisible(label);
+}
+
+void KOMPURA3000AudioProcessorEditor::timerCallback() {
+    MeterLeft.setLevel(audioProcessor.getRmsValue(0));
+    MeterRight.setLevel(audioProcessor.getRmsValue(1));
+    MeterLeft.repaint();
+    MeterRight.repaint();
 }

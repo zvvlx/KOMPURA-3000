@@ -10,18 +10,20 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "Meter.h"
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 
 //==============================================================================
 /**
 */
-class KOMPURA3000AudioProcessorEditor  : public juce::AudioProcessorEditor
+class KOMPURA3000AudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
 {
 public:
     KOMPURA3000AudioProcessorEditor (KOMPURA3000AudioProcessor&, juce::AudioProcessorValueTreeState&);
     ~KOMPURA3000AudioProcessorEditor() override;
 
     //==============================================================================
+    void timerCallback() override;
     void paint (juce::Graphics&) override;
     void resized() override;
 
@@ -35,6 +37,7 @@ private:
     juce::Slider threshSlider, slopeSlider, kneeSlider, attackSlider, releaseSlider, gainSlider;
     juce::Label threshLabel, slopeLabel, kneeLabel, attackLabel, releaseLabel, gainLabel;
     std::unique_ptr<SliderAttachment> threshAttachment, slopeAttachment, kneeAttachment, attackAttachment, releaseAttachment, gainAttachment;
+    Meter MeterLeft, MeterRight;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KOMPURA3000AudioProcessorEditor)
 };

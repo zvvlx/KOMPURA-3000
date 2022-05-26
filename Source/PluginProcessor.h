@@ -55,12 +55,13 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    double rawVolume;
+    float getRmsValue(const int channel) const;
 
 private:
     juce::Array<Compressor> allCompressors;
     juce::AudioProcessorValueTreeState state;
     std::atomic<float>* threshParam, *slopeParam, *kneeParam, *attackParam, *releaseParam, *gainParam;
+    juce::LinearSmoothedValue<float> rmsLevelLeftBefore, rmsLevelRightBefore, rmsLevelLeftAfter, rmsLevelRightAfter;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KOMPURA3000AudioProcessor)
 };

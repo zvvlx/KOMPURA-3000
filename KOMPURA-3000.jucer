@@ -5,6 +5,8 @@
               pluginManufacturer="samu" companyName="samu">
   <MAINGROUP id="KfwOC6" name="KOMPURA-3000">
     <GROUP id="{388024A8-8B07-16DD-80B0-43409565EC4B}" name="Source">
+      <FILE id="ahuGSY" name="Meter.cpp" compile="1" resource="0" file="Source/Meter.cpp"/>
+      <FILE id="q7HdC8" name="Meter.h" compile="0" resource="0" file="Source/Meter.h"/>
       <FILE id="SbKwK0" name="CircularBuffer.cpp" compile="1" resource="0"
             file="Source/CircularBuffer.cpp"/>
       <FILE id="BOUWeV" name="CircularBuffer.h" compile="0" resource="0"
