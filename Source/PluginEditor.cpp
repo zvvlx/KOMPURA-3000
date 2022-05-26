@@ -32,12 +32,13 @@ KOMPURA3000AudioProcessorEditor::~KOMPURA3000AudioProcessorEditor()
 //==============================================================================
 void KOMPURA3000AudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
     g.setFont(juce::Font("Aerial", 15.0f, juce::Font::plain));
     g.setColour (juce::Colours::white);
     g.setFont (40.0f);
     g.drawFittedText("KOMPURA-3000", getLocalBounds(), juce::Justification::centredTop, 1);
+    g.setFont(20.0f);
+    g.drawFittedText("Output volume levels", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void KOMPURA3000AudioProcessorEditor::resized()
@@ -54,8 +55,10 @@ void KOMPURA3000AudioProcessorEditor::resized()
     releaseSlider.setSize(180, 100);
     gainSlider.setSize(180, 100);
 
-    MeterLeft.setBounds(100, 100, 200, 15);
-    MeterRight.setBounds(100, 120, 200, 15);
+    MeterLeft.setBounds(550, 180, 200, 15);
+    MeterRight.setBounds(550, 200, 200, 15);
+    MeterLeft.setSize(330, 10);
+    MeterRight.setSize(330, 10);
 }
 
 

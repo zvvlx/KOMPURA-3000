@@ -203,8 +203,6 @@ void KOMPURA3000AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         rmsLevelRightAfter.setTargetValue(value2);
     else
         rmsLevelRightAfter.setCurrentAndTargetValue(value2);
-    //rmsLevelLeftAfter = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
-    //rmsLevelRightAfter = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
 }
 
 //==============================================================================
