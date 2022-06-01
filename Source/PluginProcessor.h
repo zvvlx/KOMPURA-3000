@@ -61,7 +61,7 @@ private:
     juce::Array<Compressor> allCompressors;
     juce::AudioProcessorValueTreeState state;
     std::atomic<float>* threshParam, *slopeParam, *kneeParam, *attackParam, *releaseParam, *gainParam;
-    juce::LinearSmoothedValue<float> rmsLevelLeftBefore, rmsLevelRightBefore, rmsLevelLeftAfter, rmsLevelRightAfter;
+    juce::LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KOMPURA3000AudioProcessor)
 };

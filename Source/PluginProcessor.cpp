@@ -137,11 +137,11 @@ void KOMPURA3000AudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     releaseParam = state.getRawParameterValue("release");
     gainParam = state.getRawParameterValue("gain");
 
-    rmsLevelLeftAfter.reset(sampleRate, 0.5);
-    rmsLevelRightAfter.reset(sampleRate, 0.5);
+    rmsLevelLeft.reset(sampleRate, 0.5);
+    rmsLevelRight.reset(sampleRate, 0.5);
 
-    rmsLevelLeftAfter.setCurrentAndTargetValue(-100.f);
-    rmsLevelRightAfter.setCurrentAndTargetValue(-100.f);
+    rmsLevelLeft.setCurrentAndTargetValue(-100.f);
+    rmsLevelRight.setCurrentAndTargetValue(-100.f);
 }
 
 void KOMPURA3000AudioProcessor::releaseResources()
@@ -190,19 +190,19 @@ void KOMPURA3000AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         }
     }
 
-    rmsLevelLeftAfter.skip(buffer.getNumSamples());
-    rmsLevelRightAfter.skip(buffer.getNumSamples());
+    rmsLevelLeft.skip(buffer.getNumSamples());
+    rmsLevelRight.skip(buffer.getNumSamples());
     const auto value = juce::Decibels::gainToDecibels(buffer.getRMSLevel( 0, 0, buffer.getNumSamples()));
-    if (value < rmsLevelLeftAfter.getCurrentValue())
-        rmsLevelLeftAfter.setTargetValue(value);
+    if (value < rmsLevelLeft.getCurrentValue())
+        rmsLevelLeft.setTargetValue(value);
     else
-        rmsLevelLeftAfter.setCurrentAndTargetValue(value);
+        rmsLevelLeft.setCurrentAndTargetValue(value);
 
     const auto value2 = juce::Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
-    if (value2 < rmsLevelRightAfter.getCurrentValue())
-        rmsLevelRightAfter.setTargetValue(value2);
+    if (value2 < rmsLevelRight.getCurrentValue())
+        rmsLevelRight.setTargetValue(value2);
     else
-        rmsLevelRightAfter.setCurrentAndTargetValue(value2);
+        rmsLevelRight.setCurrentAndTargetValue(value2);
 }
 
 //==============================================================================
@@ -235,10 +235,10 @@ void KOMPURA3000AudioProcessor::setStateInformation (const void* data, int sizeI
 float KOMPURA3000AudioProcessor::getRmsValue(const int channel) const {
     jassert(channel == 0 || channel == 1);
     if (channel == 0) {
-        return rmsLevelLeftAfter.getCurrentValue();
+        return rmsLevelLeft.getCurrentValue();
     }
     if (channel == 1) {
-        return rmsLevelRightAfter.getCurrentValue();
+        return rmsLevelRight.getCurrentValue();
     }
     return 0;
 }
